@@ -1,0 +1,12 @@
+[package]
+name = "rust_gps"
+version = "0.1.0"
+authors = ["Ahmetcan Aksu ahmetcanaksu@behemehal.net"]
+edition = "2018"
+description = "GPS package parser according to NMEA standards"
+keywords = ["robotics", "ublox", "gps", "nnea", "gpio"]
+categories = ["hardware-support", "science::robotics"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
