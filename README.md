@@ -1,4 +1,4 @@
-# Rust-GPS
+# Rust-GPS [Needs-Rebuild]
 GPS package parser according to NMEA standards
 
 | Package Type                                           | Implemented  |
