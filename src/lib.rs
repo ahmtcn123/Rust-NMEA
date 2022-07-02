@@ -2,7 +2,7 @@
 #![deny(missing_debug_implementations)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(test, deny(warnings))]
-#![doc(html_root_url = "https://docs.rs/rust_nmea/1.0.0")]
+#![doc(html_root_url = "https://docs.rs/rust_nmea/1.0.1")]
 //!# Rust NMEA
 //!NMEA (0183) parser and information library for Rust.
 //!
@@ -43,7 +43,6 @@
 //! ));
 //! ```
 //! You can find more examples [here](https://github.com/ahmtcn123/Rust-NMEA/master/examples)
-
 
 /// NMEA commands
 pub mod commands;

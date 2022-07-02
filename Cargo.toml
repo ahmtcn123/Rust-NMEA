@@ -1,10 +1,17 @@
 [package]
 name = "rust_nmea"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Ahmetcan Aksu ahmetcanaksu@behemehal.net"]
 edition = "2021"
 description = "NMEA (0183) parser and information library for Rust. "
 keywords = ["robotics", "ublox", "gps", "nmea", "gpio"]
 categories = ["science::robotics"]
+documentation = "https://docs.rs/rust_nmea"
+repository = "https://github.com/ahmtcn123/Rust-NMEA"
+license = "GPL-2.0"
 
 [dependencies]
+
+[[example]]
+name = "unix-serial"
+path = "examples/unix-serial.rs"
