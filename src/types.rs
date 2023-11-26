@@ -259,11 +259,47 @@ pub enum NavigationalStatus {
 impl NavigationalStatus {
     pub(crate) fn from_str(s: &str) -> Result<NavigationalStatus, &str> {
         match s {
-            "S" => Ok(NavigationalStatus::Safe),
-            "C" => Ok(NavigationalStatus::Caution),
-            "U" => Ok(NavigationalStatus::Unsafe),
-            "V" => Ok(NavigationalStatus::NotValid),
-            _ => Err("Invalid navigational status"),
+/// Talker IDs
+#[derive(Debug, Clone, PartialEq)]
+pub enum TalkerIds {
+    /// Galileo
+    GA,
+    /// BeiDou
+    GB,
+    /// GPS
+    GP,
+    /// GLONASS
+    GL,
+    /// Combined GNSS position.
+    GN,
+    /// QZSS
+    GQ,
+}
+
+impl TalkerIds {
+    /// Check if Talker ID is correct
+    pub fn is_correct(code: &str) -> bool {
+        match code {
+            "$GA" => true,
+            "$GB" => true,
+            "$GP" => true,
+            "$GL" => true,
+            "$GN" => true,
+            "$GQ" => true,
+            _ => false,
+        }
+    }
+
+    /// Parse Talker ID
+    pub fn parse(code: &str) -> TalkerIds {
+        match code {
+            "$GA" => TalkerIds::GA,
+            "$GB" => TalkerIds::GB,
+            "$GP" => TalkerIds::GP,
+            "$GL" => TalkerIds::GL,
+            "$GN" => TalkerIds::GN,
+            "$GQ" => TalkerIds::GQ,
+            _ => unreachable!(),
         }
     }
 }

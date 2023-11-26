@@ -1,6 +1,6 @@
 use crate::{
     commands::gga::GGA,
-    types::{CommandTypes, Error},
+    types::{CommandTypes, Error, TalkerIds},
 };
 
 /// Parser struct
@@ -10,6 +10,8 @@ pub struct Parser {
     pub r#type: CommandTypes,
     /// Commands to parse
     pub commands: Vec<String>,
+    /// Talker ID
+    pub talker_id: TalkerIds,
     type_start_collected: bool,
     command_type_collected: bool,
 }
@@ -53,6 +55,7 @@ impl Parser {
     pub fn parse_line(line: &str) -> Result<CommandTypes, Error> {
         let mut parser = Parser {
             r#type: CommandTypes::GGA(GGA::default()),
+            talker_id: TalkerIds::GP,
             commands: Vec::new(),
             type_start_collected: false,
             command_type_collected: false,
@@ -88,11 +91,15 @@ impl Parser {
             command += &char.to_string();
             if !parser.type_start_collected {
                 if command.len() == 3 {
-                    if command == "$GP" {
+                    if TalkerIds::is_correct(&command) {
                         parser.type_start_collected = true;
+                        parser.talker_id = TalkerIds::parse(&command);
                         command = "".to_string();
                     } else {
-                        return Err(Error(format!("Invalid command start \"{}\"", command)));
+                        return Err(Error::ParseError(format!(
+                            "Invalid command start \"{}\"",
+                            command
+                        )));
                     }
                 }
             } else if !parser.command_type_collected {
