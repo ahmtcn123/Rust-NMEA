@@ -2,7 +2,7 @@
 #![deny(missing_debug_implementations)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(test, deny(warnings))]
-#![doc(html_root_url = "https://docs.rs/rust_nmea/1.0.1")]
+#![doc(html_root_url = "https://docs.rs/rust_nmea/1.2.5")]
 //!# Rust NMEA
 //!NMEA (0183) parser and information library for Rust.
 //!

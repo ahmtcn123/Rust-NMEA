@@ -1,6 +1,6 @@
 [package]
 name = "rust_nmea"
-version = "1.2.4"
+version = "1.2.5"
 authors = ["Ahmetcan Aksu ahmetcanaksu@behemehal.net"]
 edition = "2021"
 description = "NMEA (0183) parser and information library for Rust. "
