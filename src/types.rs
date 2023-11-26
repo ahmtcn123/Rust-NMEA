@@ -1,5 +1,8 @@
+use crate::commands::dtm::DTM;
+use crate::commands::gbs::GBS;
 use crate::commands::gga::GGA;
 use crate::commands::gll::GLL;
+use crate::commands::gns::GNS;
 use crate::commands::gsa::GSA;
 use crate::commands::gsv::GSVPage;
 use crate::commands::rmc::RMC;
@@ -8,17 +11,24 @@ use core::num;
 
 /// Error struct
 #[derive(Debug, Clone, PartialEq)]
-pub struct Error(pub String);
+pub enum Error {
+    /// Parser error
+    ParseError(String),
+    /// Unknown command
+    UnknownCommand(String),
+    /// Checksum error, expected, received
+    ChecksumError(u8, u8),
+}
 
 impl From<num::ParseIntError> for Error {
     fn from(e: num::ParseIntError) -> Error {
-        Error(format!("ParseIntError {}", e.to_string()))
+        Error::ParseError(format!("ParseIntError {}", e.to_string()))
     }
 }
 
 impl From<num::ParseFloatError> for Error {
     fn from(e: num::ParseFloatError) -> Error {
-        Error(format!("ParseFloatError {}", e.to_string()))
+        Error::ParseError(format!("ParseFloatError {}", e.to_string()))
     }
 }
 
@@ -41,6 +51,12 @@ pub enum CommandTypes {
     RMC(RMC),
     /// VTG ( Course Over Ground and Ground Speed )
     VTG(VTG),
+    /// DTM ( Datum Reference )
+    DTM(DTM),
+    /// GBS ( GNSS Satellite Fault Detection )
+    GBS(GBS),
+    /// GNS ( GNSS Fix Data )
+    GNS(GNS),
 }
 
 impl CommandTypes {
@@ -52,6 +68,9 @@ impl CommandTypes {
             "GSA" => Ok(CommandTypes::GSA(GSA::default())),
             "VTG" => Ok(CommandTypes::VTG(VTG::default())),
             "RMC" => Ok(CommandTypes::RMC(RMC::default())),
+            "DTM" => Ok(CommandTypes::DTM(DTM::default())),
+            "GBS" => Ok(CommandTypes::GBS(GBS::default())),
+            "GNS" => Ok(CommandTypes::GNS(GNS::default())),
             _ => Err("Invalid command type"),
         }
     }
@@ -80,6 +99,18 @@ impl CommandTypes {
             },
             CommandTypes::RMC(e) => match e.parse_command(command) {
                 Ok(e) => Ok(CommandTypes::RMC(e.clone())),
+                Err(e) => Err(e),
+            },
+            CommandTypes::DTM(e) => match e.parse_command(command) {
+                Ok(e) => Ok(CommandTypes::DTM(e.clone())),
+                Err(e) => Err(e),
+            },
+            CommandTypes::GBS(e) => match e.parse_command(command) {
+                Ok(e) => Ok(CommandTypes::GBS(e.clone())),
+                Err(e) => Err(e),
+            },
+            CommandTypes::GNS(e) => match e.parse_command(command) {
+                Ok(e) => Ok(CommandTypes::GNS(e.clone())),
                 Err(e) => Err(e),
             },
         }
@@ -135,7 +166,7 @@ pub struct Cordinate {
     /// Cordinate in degrees
     pub degree: usize,
     /// Cordinate in minutes
-    pub minute: f32,
+    pub minute: f64,
 }
 
 /// GGA command status
@@ -158,24 +189,54 @@ pub enum GGAStatus {
 /// ModeIndicator struct
 #[derive(Debug, Clone, PartialEq)]
 pub enum ModeIndicator {
+    /// NoFix
+    NoFix,
     /// Autonomous mode
     Autonomous,
     /// Differential mode
     Differential,
-    /// Dead reckoning mode
-    DeadReckoning,
-    /// None
-    None,
+    /// Precise mode
+    Precise,
+    /// Real Time Kinematic mode
+    RealTime,
+    /// Float RTK mode
+    FloatRtk,
+    /// Estimate (Dead reckoning) mode
+    Estimate,
+    /// Manual input mode
+    Manual,
+    /// Simulation mode
+    Simulation,
 }
 
 impl ModeIndicator {
     pub(crate) fn from_str(s: &str) -> Result<ModeIndicator, &str> {
         match s {
+            "N" => Ok(ModeIndicator::NoFix),
             "A" => Ok(ModeIndicator::Autonomous),
             "D" => Ok(ModeIndicator::Differential),
-            "E" => Ok(ModeIndicator::DeadReckoning),
-            "N" => Ok(ModeIndicator::None),
+            "P" => Ok(ModeIndicator::Precise),
+            "R" => Ok(ModeIndicator::RealTime),
+            "F" => Ok(ModeIndicator::FloatRtk),
+            "E" => Ok(ModeIndicator::Estimate),
+            "M" => Ok(ModeIndicator::Manual),
+            "S" => Ok(ModeIndicator::Simulation),
             _ => Err("Invalid mode indicator"),
+        }
+    }
+
+    pub(crate) fn from_char(s: char) -> Option<ModeIndicator> {
+        match s {
+            'N' => Some(ModeIndicator::NoFix),
+            'A' => Some(ModeIndicator::Autonomous),
+            'D' => Some(ModeIndicator::Differential),
+            'P' => Some(ModeIndicator::Precise),
+            'R' => Some(ModeIndicator::RealTime),
+            'F' => Some(ModeIndicator::FloatRtk),
+            'E' => Some(ModeIndicator::Estimate),
+            'M' => Some(ModeIndicator::Manual),
+            'S' => Some(ModeIndicator::Simulation),
+            _ => None,
         }
     }
 }
@@ -256,9 +317,31 @@ pub enum NavigationalStatus {
     NotValid,
 }
 
-impl NavigationalStatus {
-    pub(crate) fn from_str(s: &str) -> Result<NavigationalStatus, &str> {
+/// Cardinal Direction struct
+#[derive(Debug, Clone, PartialEq)]
+pub enum CardinalDirection {
+    /// North
+    North,
+    /// South
+    South,
+    /// East
+    East,
+    /// West
+    West,
+}
+
+impl CardinalDirection {
+    pub(crate) fn from_char(s: char) -> Option<CardinalDirection> {
         match s {
+            'N' => Some(CardinalDirection::North),
+            'S' => Some(CardinalDirection::South),
+            'E' => Some(CardinalDirection::East),
+            'W' => Some(CardinalDirection::West),
+            _ => None,
+        }
+    }
+}
+
 /// Talker IDs
 #[derive(Debug, Clone, PartialEq)]
 pub enum TalkerIds {

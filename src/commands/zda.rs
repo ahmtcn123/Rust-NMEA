@@ -27,12 +27,16 @@ impl Default for ZDA {
 impl Command<ZDA> for ZDA {
     fn parse_command(&self, command: Vec<String>) -> Result<ZDA, crate::types::Error> {
         if command.len() != 6 {
-            return Err(Error(format!(
+            return Err(Error::ParseError(format!(
                 "Invalid ZDA command length: {}",
                 command.join(" ")
             )));
         } else {
-            let time_split: Vec<&str> = command[0].split(".").collect();
+            let time_split: Vec<&str> = if command[0].contains(".") {
+                command[0].split(".").collect()
+            } else {
+                vec![&command[0], "0"]
+            };
 
             let hour = time_split[0][..2].parse::<u8>()?;
             let minute = time_split[0][2..4].parse::<u8>()?;

@@ -12,11 +12,11 @@ pub struct GSA {
     /// Number of satellites used in navigation
     pub number_of_satellites: usize,
     /// PDOP ( Position Dilution of Precision )
-    pub pdop: f32,
+    pub pdop: f64,
     /// HDOP ( Horizontal Dilution of Precision )
-    pub hdop: f32,
+    pub hdop: f64,
     /// VDOP ( Vertical Dilution of Precision )
-    pub vdop: f32,
+    pub vdop: f64,
 }
 
 impl Default for GSA {
@@ -37,11 +37,21 @@ impl Command<GSA> for GSA {
     fn parse_command(&self, command: Vec<String>) -> Result<GSA, crate::types::Error> {
         let operation_mode = match GSAOperationMode::from_str(&command[0]) {
             Ok(e) => e,
-            Err(_) => return Err(Error(format!("Invalid operation mode: {}", command[0]))),
+            Err(_) => {
+                return Err(Error::ParseError(format!(
+                    "Invalid operation mode: {}",
+                    command[0]
+                )))
+            }
         };
         let navigation_mode = match NavigationMode::from_str(&command[1]) {
             Ok(e) => e,
-            Err(_) => return Err(Error(format!("Invalid navigation mode: {}", command[1]))),
+            Err(_) => {
+                return Err(Error::ParseError(format!(
+                    "Invalid navigation mode: {}",
+                    command[1]
+                )))
+            }
         };
         let satellites: Vec<Option<u8>> = command[2..14]
             .iter()
@@ -52,9 +62,9 @@ impl Command<GSA> for GSA {
             .filter(|x| x.is_some())
             .collect::<Vec<_>>()
             .len();
-        let pdop = command[14].parse().unwrap();
-        let hdop = command[15].parse().unwrap();
-        let vdop = command[16].parse().unwrap();
+        let pdop = command[14].parse()?;
+        let hdop = command[15].parse()?;
+        let vdop = command[16].parse()?;
         Ok(GSA {
             operation_mode,
             navigation_mode,

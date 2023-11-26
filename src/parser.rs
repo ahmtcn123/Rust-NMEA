@@ -63,16 +63,32 @@ impl Parser {
 
         let mut command = String::new();
         let mut commands: Vec<String> = Vec::new();
-        let checksum = line.split("*").last().unwrap();
-        //Parse hexa decimal checksum to u8
-        let checksum_u8: u8 = u8::from_str_radix(checksum, 16).unwrap();
+        let checksum = match line.split("*").last() {
+            Some(e) => e,
+            None => {
+                return Err(Error::ParseError("Invalid line".to_string()));
+            }
+        };
 
-        let command_clean = line
-            .split("$")
-            .last()
-            .unwrap()
-            .split("*")
-            .collect::<Vec<_>>()[0];
+        //Parse hexa decimal checksum to u8
+        let checksum_u8: u8 = match u8::from_str_radix(checksum, 16) {
+            Ok(e) => e,
+            Err(_) => {
+                return Err(Error::ParseError(format!(
+                    "Invalid line, checksum is invalid \"{}\"",
+                    checksum
+                )));
+            }
+        };
+
+        let command_clean = match line.split("$").last() {
+            Some(e) => e,
+            None => {
+                return Err(Error::ParseError("Invalid line".to_string()));
+            }
+        };
+
+        let command_clean = command_clean.split("*").collect::<Vec<_>>()[0];
 
         //nmea checksum calculation
         let mut checksum_calculated = 0;
@@ -81,10 +97,7 @@ impl Parser {
         }
 
         if checksum_calculated != checksum_u8 {
-            return Err(Error(format!(
-                "Invalid checksum: Expected: {} - Got: {}",
-                checksum_u8, checksum_calculated
-            )));
+            return Err(Error::ChecksumError(checksum_u8, checksum_calculated));
         }
 
         for char in line.chars() {
@@ -112,7 +125,7 @@ impl Parser {
                             command = "".to_string();
                         }
                         Err(_) => {
-                            return Err(Error(format!("Invalid command type \"{}\"", command)));
+                            return Err(Error::UnknownCommand(command));
                         }
                     }
                 }
@@ -134,7 +147,7 @@ impl Parser {
         if parser.command_type_collected && parser.type_start_collected {
             parser.r#type.parse_commands(commands)
         } else {
-            return Err(Error("Invalid line".to_string()));
+            return Err(Error::ParseError("Invalid line".to_string()));
         }
     }
 }

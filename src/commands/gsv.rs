@@ -52,7 +52,10 @@ impl Default for GSVPage {
 impl Command<GSVPage> for GSVPage {
     fn parse_command(&self, command: Vec<String>) -> Result<GSVPage, Error> {
         if command.len() < 4 {
-            return Err(Error(format!("Invalid GSV command len: {}", command.len())));
+            return Err(Error::ParseError(format!(
+                "Invalid GSV command len: {}",
+                command.len()
+            )));
         }
 
         let total_pages: usize = command[0].parse()?;

@@ -44,7 +44,7 @@ impl Default for VTG {
 impl Command<VTG> for VTG {
     fn parse_command(&self, command: Vec<String>) -> Result<VTG, crate::types::Error> {
         if command.len() != 9 {
-            return Err(Error(format!(
+            return Err(Error::ParseError(format!(
                 "Invalid VTG command length: {}",
                 command.join(" ")
             )));
@@ -52,14 +52,18 @@ impl Command<VTG> for VTG {
             let course_over_ground_true = command[0].parse::<f32>().ok();
             let course_over_ground_unit = match command[1].chars().next() {
                 Some(e) => e,
-                None => return Err(Error("Invalid course over ground unit".to_string())),
+                None => {
+                    return Err(Error::ParseError(
+                        "Invalid course over ground unit".to_string(),
+                    ))
+                }
             };
 
             let course_over_ground_magnetic = command[2].parse::<f32>().ok();
             let course_over_ground_magnetic_unit = match command[3].chars().next() {
                 Some(e) => e,
                 None => {
-                    return Err(Error(
+                    return Err(Error::ParseError(
                         "Invalid course over ground magnetic unit".to_string(),
                     ))
                 }
@@ -68,18 +72,26 @@ impl Command<VTG> for VTG {
             let speed_over_ground_first = command[4].parse::<f32>().ok();
             let speed_over_ground_first_unit = match VTGUnit::from_str(&command[5]) {
                 Ok(e) => e,
-                Err(_) => return Err(Error("Invalid speed over ground first unit".to_string())),
+                Err(_) => {
+                    return Err(Error::ParseError(
+                        "Invalid speed over ground first unit".to_string(),
+                    ))
+                }
             };
 
             let speed_over_ground_second = command[6].parse::<f32>().ok();
             let speed_over_ground_second_unit = match VTGUnit::from_str(&command[7]) {
                 Ok(e) => e,
-                Err(_) => return Err(Error("Invalid speed over ground second unit".to_string())),
+                Err(_) => {
+                    return Err(Error::ParseError(
+                        "Invalid speed over ground second unit".to_string(),
+                    ))
+                }
             };
 
             let mode_indicator = match ModeIndicator::from_str(&command[8]) {
                 Ok(e) => e,
-                Err(_) => return Err(Error("Invalid mode indicator".to_string())),
+                Err(_) => return Err(Error::ParseError("Invalid mode indicator".to_string())),
             };
 
             Ok(VTG {
