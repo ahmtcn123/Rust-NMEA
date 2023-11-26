@@ -18,7 +18,7 @@ impl Parser {
     /// Parse given line
     /// # Examples
     /// ```
-    /// use rust_nmea::{parser, types::{CommandTypes, Time, Cordinate, GGAStatus}, commands::gga::GGA};
+    /// use rust_nmea::{parser, types::{CommandTypes, Time, CardinalDirection, Cordinate, GGAStatus}, commands::gga::GGA};
     /// let line = "$GPGGA,161009.00,1122.20418,N,02339.35234,E,1,08,1.09,11.5,M,11.3,M,,*62";
     /// let parsed = parser::Parser::parse_line(line);
     /// assert_eq!(parsed, Ok(
@@ -30,15 +30,15 @@ impl Parser {
     ///            decimal_seconds: 0,
     ///        },
     ///        lat: Cordinate {
-    ///            degree: 11,
-    ///            minute: 22.20418,
+    ///            degree: 112,
+    ///            minute: 2.20418,
     ///        },
-    ///        northing_indicator: 'N',
+    ///        northing_indicator: CardinalDirection::North,
     ///        lon: Cordinate {
-    ///            degree: 2,
-    ///            minute: 339.35234,
+    ///            degree: 23,
+    ///            minute: 39.35234,
     ///        },
-    ///        easting_indicator: 'E',
+    ///        easting_indicator: CardinalDirection::East,
     ///        status: GGAStatus::S2d3D,
     ///        number_of_satellites: 8,
     ///        horizontal_dilution_of_position: 1.09,

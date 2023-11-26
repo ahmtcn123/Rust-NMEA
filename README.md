@@ -20,13 +20,13 @@ NMEA (0183) parser and information library for Rust.
                decimal_seconds: 0,
            },
            lat: Cordinate {
-               degree: 11,
-               minute: 22.20418,
+               degree: 112,
+               minute: 2.20418,
            },
            northing_indicator: 'N',
            lon: Cordinate {
-               degree: 2,
-               minute: 339.42234,
+               degree: 23,
+               minute: 39.42234,
            },
            easting_indicator: 'E',
            status: GGAStatus::S2d3D,
@@ -44,11 +44,11 @@ NMEA (0183) parser and information library for Rust.
 
 | Supported Packages                          | Tested | Implemented |
 | ------------------------------------------- | ------ | ----------- |
-| [DTM] (Datum Reference)                     | ❌     | ❌          |
-| [GBS] (Satellite Fault Detection)           | ❌     | ❌          |
+| [DTM] (Datum Reference)                     | ❌     | ✅          |
+| [GBS] (Satellite Fault Detection)           | ❌     | ✅          |
 | [GGA] (Global Positioning System Fix Data)  | ✅     | ✅          |
 | [GLL] (Geographic Position - Lat / Long)    | ✅     | ✅          |
-| [GNS] (GNSS Fix Data)                       | ❌     | ❌          |
+| [GNS] (GNSS Fix Data)                       | ❌     | ✅          |
 | [GRS] (GNSS Range Residuals)                | ❌     | ❌          |
 | [GSA] (GNSS DOP and Active Satellites)      | ✅     | ✅          |
 | [GST] (GNSS Pseudorange Error Statistics)   | ❌     | ❌          |
