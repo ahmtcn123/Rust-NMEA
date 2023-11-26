@@ -22,13 +22,13 @@ pub enum Error {
 
 impl From<num::ParseIntError> for Error {
     fn from(e: num::ParseIntError) -> Error {
-        Error::ParseError(format!("ParseIntError {}", e.to_string()))
+        Error::ParseError(format!("ParseIntError {}", e))
     }
 }
 
 impl From<num::ParseFloatError> for Error {
     fn from(e: num::ParseFloatError) -> Error {
-        Error::ParseError(format!("ParseFloatError {}", e.to_string()))
+        Error::ParseError(format!("ParseFloatError {}", e))
     }
 }
 
@@ -362,15 +362,7 @@ pub enum TalkerIds {
 impl TalkerIds {
     /// Check if Talker ID is correct
     pub fn is_correct(code: &str) -> bool {
-        match code {
-            "$GA" => true,
-            "$GB" => true,
-            "$GP" => true,
-            "$GL" => true,
-            "$GN" => true,
-            "$GQ" => true,
-            _ => false,
-        }
+        matches!(code, "$GA" | "$GB" | "$GP" | "$GL" | "$GN" | "$GQ")
     }
 
     /// Parse Talker ID

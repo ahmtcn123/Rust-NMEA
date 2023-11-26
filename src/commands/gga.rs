@@ -20,7 +20,7 @@ pub struct GGA {
     /// Number of satellites in view
     pub number_of_satellites: u8,
     /// Horizontal dilution of precision
-    pub horizontal_dilution_of_position: f32,
+    pub horizontal_dilution_of_position: f64,
     /// Antenna altitude above mean sea level
     pub altitude: f64,
     /// Altitude units: M (meters, fixed field)
@@ -30,7 +30,7 @@ pub struct GGA {
     /// Geoid separation units: M (meters, fixed field)
     pub geoid_separation_unit: String,
     /// Age of differential corrections (null when DGPS is not used)
-    pub differential_age_of_position: usize,
+    pub differential_age_of_position: f32,
     /// Differential reference station ID (null when DGPS is not used)
     pub differential_reference_station_id: usize,
 }
@@ -64,8 +64,8 @@ impl Command<GGA> for GGA {
                 command.len()
             )))
         } else {
-            let time_split: Vec<&str> = if command[0].contains(".") {
-                command[0].split(".").collect()
+            let time_split: Vec<&str> = if command[0].contains('.') {
+                command[0].split('.').collect()
             } else {
                 vec![&command[0], "0"]
             };
@@ -128,19 +128,14 @@ impl Command<GGA> for GGA {
                 ))),
             }?;
             let number_of_satellites: u8 = command[6].parse()?;
-            let horizontal_dilution_of_position: f32 = command[7].parse()?;
+            let horizontal_dilution_of_position = command[7].parse()?;
             let altitude = command[8].parse()?;
             let altitude_unit = command[9].to_string();
             let geoid_separation = command[10].parse()?;
             let geoid_separation_unit = command[11].to_string();
-            let differential_age_of_position = if command[12] == "" {
-                0_usize
-            } else {
-                command[12].parse()?
-            };
-            let differential_reference_station_id = if command.len() == 14 {
-                0
-            } else if command[13] == "" {
+            let differential_age_of_position = command[12].parse().unwrap_or_default();
+            let differential_reference_station_id = if command.len() == 14 || command[13].is_empty()
+            {
                 0
             } else {
                 command[13].parse()?

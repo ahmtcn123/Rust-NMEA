@@ -1,7 +1,7 @@
 use crate::types::{Command, Date, Error, Time};
 
 /// ZDA (Time and Date)
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct ZDA {
     /// UTC Time
     pub time: Time,
@@ -13,27 +13,16 @@ pub struct ZDA {
     pub local_zone_minutes: usize,
 }
 
-impl Default for ZDA {
-    fn default() -> Self {
-        Self {
-            time: Time::default(),
-            date: Date::default(),
-            local_zone_hours: 0,
-            local_zone_minutes: 0,
-        }
-    }
-}
-
 impl Command<ZDA> for ZDA {
     fn parse_command(&self, command: Vec<String>) -> Result<ZDA, crate::types::Error> {
         if command.len() != 6 {
-            return Err(Error::ParseError(format!(
+            Err(Error::ParseError(format!(
                 "Invalid ZDA command length: {}",
                 command.join(" ")
-            )));
+            )))
         } else {
-            let time_split: Vec<&str> = if command[0].contains(".") {
-                command[0].split(".").collect()
+            let time_split: Vec<&str> = if command[0].contains('.') {
+                command[0].split('.').collect()
             } else {
                 vec![&command[0], "0"]
             };

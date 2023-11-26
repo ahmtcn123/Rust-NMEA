@@ -48,7 +48,7 @@ impl Parser {
     ///        altitude_unit: "M".to_string(),
     ///        geoid_separation: 11.3,
     ///        geoid_separation_unit: "M".to_string(),
-    ///        differential_age_of_position: 0,
+    ///        differential_age_of_position: 0.0,
     ///        differential_reference_station_id: 0,
     ///   })
     /// ));
@@ -63,7 +63,7 @@ impl Parser {
 
         let mut command = String::new();
         let mut commands: Vec<String> = Vec::new();
-        let checksum = match line.split("*").last() {
+        let checksum = match line.split('*').last() {
             Some(e) => e,
             None => {
                 return Err(Error::ParseError("Invalid line".to_string()));
@@ -81,14 +81,14 @@ impl Parser {
             }
         };
 
-        let command_clean = match line.split("$").last() {
+        let command_clean = match line.split('$').last() {
             Some(e) => e,
             None => {
                 return Err(Error::ParseError("Invalid line".to_string()));
             }
         };
 
-        let command_clean = command_clean.split("*").collect::<Vec<_>>()[0];
+        let command_clean = command_clean.split('*').collect::<Vec<_>>()[0];
 
         //nmea checksum calculation
         let mut checksum_calculated = 0;
@@ -117,7 +117,7 @@ impl Parser {
                 }
             } else if !parser.command_type_collected {
                 if command.len() == 4 && char == ',' {
-                    command = command.replace(",", "");
+                    command = command.replace(',', "");
                     match CommandTypes::from_str(&command) {
                         Ok(command_type) => {
                             parser.r#type = command_type;
@@ -129,25 +129,23 @@ impl Parser {
                         }
                     }
                 }
-            } else {
-                if char == ',' {
-                    commands.push(command.replace(",", ""));
-                    command = "".to_string();
-                } else if char == '*' {
-                    commands.push(command.replace(",", "").replace("*", ""));
-                    command = "".to_string();
-                    break;
-                }
+            } else if char == ',' {
+                commands.push(command.replace(',', ""));
+                command = "".to_string();
+            } else if char == '*' {
+                commands.push(command.replace([',', '*'], ""));
+                command = "".to_string();
+                break;
             }
         }
-        if command != "" {
+        if !command.is_empty() {
             commands.push(command);
         }
 
         if parser.command_type_collected && parser.type_start_collected {
             parser.r#type.parse_commands(commands)
         } else {
-            return Err(Error::ParseError("Invalid line".to_string()));
+            Err(Error::ParseError("Invalid line".to_string()))
         }
     }
 }

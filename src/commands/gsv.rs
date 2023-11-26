@@ -23,7 +23,7 @@ pub struct GSV {
 }
 
 /// GSV Page is child of GSV
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct GSVPage {
     /// Number of pages will arrive
     pub total_pages: usize,
@@ -35,18 +35,6 @@ pub struct GSVPage {
     pub satellites: Vec<Satellite>,
     /// Signal ID
     pub signal_id: Option<usize>,
-}
-
-impl Default for GSVPage {
-    fn default() -> Self {
-        Self {
-            total_pages: 0,
-            page_id: 0,
-            number_of_known_satellites_in_view: 0,
-            satellites: Vec::new(),
-            signal_id: None,
-        }
-    }
 }
 
 impl Command<GSVPage> for GSVPage {
@@ -67,8 +55,8 @@ impl Command<GSVPage> for GSVPage {
         for i in 0..4 {
             let idx = i * 4;
 
-            let id: Option<usize> = if command.len() > idx + 0 {
-                match command[idx + 0].parse::<usize>() {
+            let id: Option<usize> = if command.len() > idx {
+                match command[idx].parse::<usize>() {
                     Ok(e) => Some(e),
                     Err(_) => None,
                 }

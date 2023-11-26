@@ -44,10 +44,10 @@ impl Default for VTG {
 impl Command<VTG> for VTG {
     fn parse_command(&self, command: Vec<String>) -> Result<VTG, crate::types::Error> {
         if command.len() != 9 {
-            return Err(Error::ParseError(format!(
+            Err(Error::ParseError(format!(
                 "Invalid VTG command length: {}",
                 command.join(" ")
-            )));
+            )))
         } else {
             let course_over_ground_true = command[0].parse::<f32>().ok();
             let course_over_ground_unit = match command[1].chars().next() {

@@ -1,7 +1,7 @@
 use crate::types::{CardinalDirection, Command, Error, ModeIndicator, Time};
 
 /// GNS - GNSS Fix Data
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct GNS {
     /// UTC Time
     pub time: Time,
@@ -37,33 +37,10 @@ pub struct GNS {
     pub reference_station_id: Option<String>,
 }
 
-impl Default for GNS {
-    fn default() -> Self {
-        Self {
-            time: Default::default(),
-            latitude: Default::default(),
-            latitude_direction: None,
-            longitude: Default::default(),
-            longitude_direction: None,
-            gps_mode_indicator: Default::default(),
-            glonass_mode_indicator: Default::default(),
-            galileo_mode_indicator: Default::default(),
-            beidou_mode_indicator: Default::default(),
-            qzss_mode_indicator: Default::default(),
-            number_of_satellites_in_use: Default::default(),
-            horizontal_dilution_of_precision: Default::default(),
-            orthometric_height: Default::default(),
-            geodial_separation: Default::default(),
-            age_of_differential_gps_data: Default::default(),
-            reference_station_id: Default::default(),
-        }
-    }
-}
-
 impl Command<GNS> for GNS {
     fn parse_command(&self, command: Vec<String>) -> Result<GNS, Error> {
-        let time_split: Vec<&str> = if command[0].contains(".") {
-            command[0].split(".").collect()
+        let time_split: Vec<&str> = if command[0].contains('.') {
+            command[0].split('.').collect()
         } else {
             vec![&command[0], "0"]
         };

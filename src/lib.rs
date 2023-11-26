@@ -2,7 +2,7 @@
 #![deny(missing_debug_implementations)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(test, deny(warnings))]
-#![doc(html_root_url = "https://docs.rs/rust_nmea/1.2.5")]
+#![doc(html_root_url = "https://docs.rs/rust_nmea/1.2.6")]
 //!# Rust NMEA
 //!NMEA (0183) parser and information library for Rust.
 //!
@@ -37,7 +37,7 @@
 //!        altitude_unit: "M".to_string(),
 //!        geoid_separation: 11.3,
 //!        geoid_separation_unit: "M".to_string(),
-//!        differential_age_of_position: 0,
+//!        differential_age_of_position: 0.0,
 //!        differential_reference_station_id: 0,
 //!   })
 //! ));

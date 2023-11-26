@@ -47,8 +47,8 @@ impl Default for RMC {
 
 impl Command<RMC> for RMC {
     fn parse_command(&self, command: Vec<String>) -> Result<RMC, crate::types::Error> {
-        let time_split: Vec<&str> = if command[0].contains(".") {
-            command[0].split(".").collect()
+        let time_split: Vec<&str> = if command[0].contains('.') {
+            command[0].split('.').collect()
         } else {
             vec![&command[0], "0"]
         };
@@ -124,9 +124,7 @@ impl Command<RMC> for RMC {
                     'E'
                 } else if e == 'W' {
                     'W'
-                } else if e == ' ' {
-                    ' '
-                } else if e == '\0' {
+                } else if e == ' ' || e == '\0' {
                     ' '
                 } else {
                     return Err(Error::ParseError(
@@ -138,10 +136,7 @@ impl Command<RMC> for RMC {
         };
 
         let magnetic_variation_indicator =
-            match CardinalDirection::from_char(magnetic_variation_indicator) {
-                Some(e) => Some(e),
-                None => None,
-            };
+            CardinalDirection::from_char(magnetic_variation_indicator);
 
         Ok(RMC {
             time,

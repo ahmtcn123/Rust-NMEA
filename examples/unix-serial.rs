@@ -20,7 +20,7 @@ fn main() {
     loop {
         //Read char
         let mut buf = [0u8; 1];
-        serial_file.read(&mut buf).unwrap();
+        serial_file.read_exact(&mut buf).unwrap();
         let char = buf[0] as char;
 
         // If carriage return is detected ignore and make `carriage_return` false
@@ -33,7 +33,9 @@ fn main() {
                 Ok(parsed) => {
                     println!("{:?}", parsed);
                 }
-                Err(_) => (),
+                Err(e) => {
+                    println!("Parsing error: {:#?}", e);
+                }
             }
             line = "".to_string();
             carriage_return = false;

@@ -23,8 +23,8 @@ pub struct GBS {
 
 impl Command<GBS> for GBS {
     fn parse_command(&self, command: Vec<String>) -> Result<GBS, Error> {
-        let time_split: Vec<&str> = if command[0].contains(".") {
-            command[0].split(".").collect()
+        let time_split: Vec<&str> = if command[0].contains('.') {
+            command[0].split('.').collect()
         } else {
             vec![&command[0], "0"]
         };
